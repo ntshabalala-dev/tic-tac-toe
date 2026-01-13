@@ -1,17 +1,3 @@
-function Cell() {
-    let value = 0;
-
-    const addToken = (player) => {
-        value = player;
-    };
-
-    const getValue = () => value;
-
-    return {
-        addToken,
-        getValue
-    };
-}
 
 const rows = 6;
 const columns = 7;
@@ -24,4 +10,22 @@ for (let i = 0; i < rows; i++) {
     }
 }
 
-console.log(board);
+
+
+
+let column = 3;
+const availableCells = board.filter((row) => row[column].getValue() === 0).map(row => row[column]);
+const lowestRow = availableCells.length - 1;
+//console.log(board[lowestRow]);
+console.log(lowestRow);
+
+
+
+
+// returns an array of arrays
+const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue()))
+console.log(boardWithCellValues);
+
+
+
+//console.log(board);

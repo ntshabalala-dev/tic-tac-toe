@@ -1,29 +1,29 @@
 let boardPlacements = {
-    h1:[],
-    h2:[],
-    h3:[],
+    h1: [],
+    h2: [],
+    h3: [],
 
-    v1:[],
-    v2:[],
-    v3:[],
+    v1: [],
+    v2: [],
+    v3: [],
 
-    c1:[],
-    c2:[],
+    c1: [],
+    c2: [],
 }
 
 const playedPositions = [];
 
 function winningCombinations() {
-    let h1 = [0,1,2];
-    let h2 = [3,4,5];
-    let h3 = [6,7,8];
+    let h1 = [0, 1, 2];
+    let h2 = [3, 4, 5];
+    let h3 = [6, 7, 8];
 
-    let v1 = [0,3,6];
-    let v2 = [1,4,7];
-    let v3 = [2,5,8];
+    let v1 = [0, 3, 6];
+    let v2 = [1, 4, 7];
+    let v3 = [2, 5, 8];
 
-    let c1 = [0,4,8];
-    let c2 = [2,4,6];
+    let c1 = [0, 4, 8];
+    let c2 = [2, 4, 6];
 
     // const j = {
     //     h1:[],
@@ -99,14 +99,17 @@ function placePosition(position, player) {
 function addToBoard(params, position, player) {
     params.forEach(element => {
         const count = boardPlacements[element].push({
-            [player]:position
+            // add players move as a object to the boardPlacements key:val store. Example: {x:4}
+            [player]: position
         });
-        
 
+        // check winner eligibility each time a winning combination gets 3 placements
         if (count == 3) {
+            console.log('fuckkkkk', element);
+
             if (result = threePlacements(element, player)) {
                 console.log(result);
-                
+
                 return result;
             }
             // Continue playing
@@ -116,17 +119,24 @@ function addToBoard(params, position, player) {
 }
 
 function threePlacements(placement, player) {
-    const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a,b) => a - b);
-    const mappedPlayers = boardPlacements[placement].map((obj) => Object.keys(obj)[0]+'');
+    console.log('dsdsd', boardPlacements[placement]);
+    let test = boardPlacements[placement][0];
+    console.log("toets :", Object.keys(test));
+
+    // Returns an array of player positions that were added to the boardplacements object ['0','4','8']
+    const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
+    // Returns an array of player symbols that were added to the boardplacements object ['x','x','x']
+    const mappedPlayers = boardPlacements[placement].map((obj) => Object.keys(obj)[0] + '');
+    // Check if each symbol placed is the same as the current players symbol. Example all items in ['x','x','x'] = player
     const firstCondition = mappedPlayers.every((currentValue) => currentValue == player)
     let secondCondition = false
 
-    console.log(mappedPositions);
-    
+    console.log('players', mappedPlayers);
+
     // limit to params
     winningCombinations().forEach((combination) => {
         combination.every((element, index) => {
-            if (element === mappedPositions[index] && ! secondCondition) {
+            if (element === mappedPositions[index] && !secondCondition) {
                 secondCondition = true;
                 return false;
             }
@@ -134,33 +144,33 @@ function threePlacements(placement, player) {
     });
 
     if (firstCondition && secondCondition) {
-        return {player:player, winningCombination:placement};
+        return { player: player, winningCombination: placement };
     } else {
         return null;
     }
 }
 
 
-placePosition(2, 'x');
+placePosition(0, 'x');
 placePosition(4, 'x');
-placePosition(6, 'x');
+placePosition(8, 'x');
 // placePosition(6, 'o');
 
-// console.log(boardPlacements);
+console.log(boardPlacements);
 // console.log(playedPositions);
 // console.log(winningCombinations()[0]);
 
 
-(function name(params) {
-    const players = {
-        players:[],
-        init: function () {
-            // not rendering anuthing
-            // cachedom for buttos & input
-            // bindEvents
-        },
-    }
+// (function name(params) {
+//     const players = {
+//         players: [],
+//         init: function () {
+//             // not rendering anuthing
+//             // cachedom for buttos & input
+//             // bindEvents
+//         },
+//     }
 
-    players.init();
-})();
+//     players.init();
+// })();
 
