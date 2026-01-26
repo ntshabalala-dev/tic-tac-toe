@@ -46,6 +46,7 @@ function Gameboard() {
         return boardWithCellValues;
     };
 
+    // possibly remove if getting values from html
     const getCoordinates = (position) => {
         [row, col] = [-1, -1];
         switch (position) {
@@ -83,7 +84,7 @@ function Gameboard() {
         return [row, col];
     }
 
-
+    //private
     const placePosition = (position, player) => {
         // Needs to be stored in local storage
         if (playedPositions.includes(position)) {
@@ -126,6 +127,60 @@ function Gameboard() {
             default:
                 console.log('position not found');
                 break;
+        }
+    }
+
+    const addToBoard = (params, position, player) => {
+        params.forEach(element => {
+            const count = boardPlacements[element].push({
+                // add players move as a object to the boardPlacements key:val store. Example: {x:4}
+                [player]: position
+            });
+
+            // check winner eligibility each time a winning combination gets 3 placements
+            if (count == 3) {
+                console.log('fuckkkkk', element);
+
+                if (result = threePlacements(element, player)) {
+                    console.log(result);
+
+                    return result;
+                }
+                // Continue playing
+                return;
+            }
+        });
+    }
+
+    const threePlacements = (placement, player) => {
+        console.log('dsdsd', boardPlacements[placement]);
+        let test = boardPlacements[placement][0];
+        console.log("toets :", Object.keys(test));
+
+        // Returns an array of player positions that were added to the boardplacements object ['0','4','8']
+        const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
+        // Returns an array of player symbols that were added to the boardplacements object ['x','x','x']
+        const mappedPlayers = boardPlacements[placement].map((obj) => Object.keys(obj)[0] + '');
+        // Check if each symbol placed is the same as the current players symbol. Example all items in ['x','x','x'] = player
+        const firstCondition = mappedPlayers.every((currentValue) => currentValue == player)
+        let secondCondition = false
+
+        console.log('players', mappedPlayers);
+
+        // limit to params
+        winningCombinations().forEach((combination) => {
+            combination.every((element, index) => {
+                if (element === mappedPositions[index] && !secondCondition) {
+                    secondCondition = true;
+                    return false;
+                }
+            })
+        });
+
+        if (firstCondition && secondCondition) {
+            return { player: player, winningCombination: placement };
+        } else {
+            return null;
         }
     }
 
@@ -197,5 +252,7 @@ function GameController(P1Name, P2Name) {
 
 const board = Gameboard();
 board.setSymbol('X', 0);
+board.setSymbol('X', 4);
+board.setSymbol('X', 8);
 console.log(board.printBoard());
 // console.log(board.getBoard());

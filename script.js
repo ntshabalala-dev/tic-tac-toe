@@ -25,20 +25,6 @@ function winningCombinations() {
     let c1 = [0, 4, 8];
     let c2 = [2, 4, 6];
 
-    // const j = {
-    //     h1:[],
-    //     h2:[],
-    //     h3:[],
-
-    //     v1:[],
-    //     v2:[],
-    //     v3:[],
-
-    //     c1:[],
-    //     c2:[],
-    // }
-
-
     return [
         h1,
         h2,
@@ -51,50 +37,96 @@ function winningCombinations() {
     ];
 }
 
+// function placePosition(position, player) {
+//     // Needs to be stored in local storage
+//     if (playedPositions.includes(position)) {
+//         console.log('Position played already. Position:', position);
+//         return;
+//     }
+
+//     // &&& check for x & os string
+
+//     playedPositions.push(position);
+
+//     switch (position) {
+//         case 0:
+//             addToBoard(['h1', 'v1', 'c1'], position, player);
+//             break;
+//         case 1:
+//             addToBoard(['h1', 'v2'], position, player);
+//             break;
+//         case 2:
+//             addToBoard(['h1', 'v3', 'c2'], position, player);
+//             break;
+//         case 3:
+//             addToBoard(['h2', 'v1'], position, player);
+//             break;
+//         case 4:
+//             addToBoard(['h2', 'v2', 'c1', 'c2'], position, player);
+//             break;
+//         case 5:
+//             addToBoard(['h2', 'v3'], position, player);
+//             break;
+//         case 6:
+//             addToBoard(['h3', 'v1', 'c2'], position, player);
+//             break;
+//         case 7:
+//             addToBoard(['h3', 'v2'], position, player);
+//             break;
+//         case 8:
+//             addToBoard(['h3', 'v3', 'c1'], position, player);
+//             break;
+//         default:
+//             console.log('position not found');
+//             break;
+//     }
+// }
+
+
+const playedPositions2 = new Set();
+
 function placePosition(position, player) {
-    // Needs to be stored in local storage
-    if (playedPositions.includes(position)) {
+
+
+    // Check if the position is valid
+    if (position < 0 || position > 8) {
+        console.error('Invalid position. Position must be between 0 and 8.');
+        return;
+    }
+
+    // Check if the position has already been played
+    if (playedPositions2.has(position)) {
         console.log('Position played already. Position:', position);
         return;
     }
 
-    // &&& check for x & os string
+    // Mark the position as played
+    playedPositions2.add(position);
 
-    playedPositions.push(position);
+    // Map positions to their corresponding elements
+    const positionMap = [
+        ['h1', 'v1', 'c1'],  // 0
+        ['h1', 'v2'],          // 1
+        ['h1', 'v3', 'c2'],  // 2
+        ['h2', 'v1'],          // 3
+        ['h2', 'v2', 'c1', 'c2'], // 4
+        ['h2', 'v3'],          // 5
+        ['h3', 'v1', 'c2'],  // 6
+        ['h3', 'v2'],          // 7
+        ['h3', 'v3', 'c1']   // 8
+    ];
 
-    switch (position) {
-        case 0:
-            addToBoard(['h1', 'v1', 'c1'], position, player);
-            break;
-        case 1:
-            addToBoard(['h1', 'v2'], position, player);
-            break;
-        case 2:
-            addToBoard(['h1', 'v3', 'c2'], position, player);
-            break;
-        case 3:
-            addToBoard(['h2', 'v1'], position, player);
-            break;
-        case 4:
-            addToBoard(['h2', 'v2', 'c1', 'c2'], position, player);
-            break;
-        case 5:
-            addToBoard(['h2', 'v3'], position, player);
-            break;
-        case 6:
-            addToBoard(['h3', 'v1', 'c2'], position, player);
-            break;
-        case 7:
-            addToBoard(['h3', 'v2'], position, player);
-            break;
-        case 8:
-            addToBoard(['h3', 'v3', 'c1'], position, player);
-            break;
-        default:
-            console.log('position not found');
-            break;
-    }
+    // Get the corresponding position data from positionMap
+    const posData = positionMap[position];
+    if (!posData) return console.error('Invalid position');
+
+    // Add the player's symbol to each element in the position
+    console.log(posData, position, player);
+
+    return addToBoard(posData, position, player);
 }
+
+
 
 function addToBoard(params, position, player) {
     params.forEach(element => {
@@ -113,7 +145,7 @@ function addToBoard(params, position, player) {
                 return result;
             }
             // Continue playing
-            return;
+            return -1;
         }
     });
 }
