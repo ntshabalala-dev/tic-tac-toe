@@ -11,7 +11,7 @@ let boardPlacements = {
     c2: [],
 }
 
-const playedPositions = [];
+//const playedPositions = [];
 
 function winningCombinations() {
     let h1 = [0, 1, 2];
@@ -83,10 +83,15 @@ function winningCombinations() {
 // }
 
 
-const playedPositions2 = new Set();
+const playedPositions = new Set();
 
 function placePosition(position, player) {
 
+    // Check if symbol is valid.
+    if (!['x', 'o'].includes(player)) {
+        console.error('Value exists in the array');
+        return -1;
+    }
 
     // Check if the position is valid
     if (position < 0 || position > 8) {
@@ -95,13 +100,14 @@ function placePosition(position, player) {
     }
 
     // Check if the position has already been played
-    if (playedPositions2.has(position)) {
+    if (playedPositions.has(position)) {
         console.log('Position played already. Position:', position);
         return;
-    }
+    }kimi k2.5
+
 
     // Mark the position as played
-    playedPositions2.add(position);
+    playedPositions.add(position);
 
     // Map positions to their corresponding elements
     const positionMap = [
@@ -121,7 +127,7 @@ function placePosition(position, player) {
     if (!posData) return console.error('Invalid position');
 
     // Add the player's symbol to each element in the position
-    console.log(posData, position, player);
+    //console.log(posData, position, player);
 
     return addToBoard(posData, position, player);
 }
@@ -129,6 +135,7 @@ function placePosition(position, player) {
 
 
 function addToBoard(params, position, player) {
+    let winner = {};
     params.forEach(element => {
         const count = boardPlacements[element].push({
             // add players move as a object to the boardPlacements key:val store. Example: {x:4}
@@ -137,23 +144,21 @@ function addToBoard(params, position, player) {
 
         // check winner eligibility each time a winning combination gets 3 placements
         if (count == 3) {
-            console.log('fuckkkkk', element);
-
             if (result = threePlacements(element, player)) {
-                console.log(result);
-
-                return result;
+                //console.log(result, 'manje????');
+                winner = result;
+                return;
             }
-            // Continue playing
-            return -1;
         }
     });
+    // Continue playing
+    return winner;
 }
 
 function threePlacements(placement, player) {
-    console.log('dsdsd', boardPlacements[placement]);
+    //console.log('dsdsd', boardPlacements[placement]);
     let test = boardPlacements[placement][0];
-    console.log("toets :", Object.keys(test));
+    //console.log("toets :", Object.keys(test));
 
     // Returns an array of player positions that were added to the boardplacements object ['0','4','8']
     const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
@@ -163,7 +168,7 @@ function threePlacements(placement, player) {
     const firstCondition = mappedPlayers.every((currentValue) => currentValue == player)
     let secondCondition = false
 
-    console.log('players', mappedPlayers);
+    //console.log('players', mappedPlayers);
 
     // limit to params
     winningCombinations().forEach((combination) => {
@@ -176,19 +181,65 @@ function threePlacements(placement, player) {
     });
 
     if (firstCondition && secondCondition) {
-        return { player: player, winningCombination: placement };
-    } else {
-        return null;
+        return {
+            player: player,
+            winningCombination: placement
+        };
     }
 }
 
 
-placePosition(0, 'x');
-placePosition(4, 'x');
-placePosition(8, 'x');
+
+// Tests
+
+//c1
+/* console.log(placePosition(0, 'x'));
+console.log(placePosition(4, 'x'));
+console.log(placePosition(8, 'x')); */
+
+// c2
+/* console.log(placePosition(4, 'x'));
+console.log(placePosition(6, 'x'));
+console.log(placePosition(2, 'x')); */
+
+// h1
+/* console.log(placePosition(0, 'x'));
+console.log(placePosition(1, 'x'));
+console.log(placePosition(2, 'x')); */
+
+// h2
+/* console.log(placePosition(3, 'o'));
+console.log(placePosition(4, 'o'));
+console.log(placePosition(5, 'o')); */
+
+// h3
+/* console.log(placePosition(6, 'o'));
+console.log(placePosition(7, 'o'));
+console.log(placePosition(8, 'o')); */
+
+// v1
+/* console.log(placePosition(0, 'o'));
+console.log(placePosition(3, 'o'));
+console.log(placePosition(6, 'o')); */
+
+// v2
+/* console.log(placePosition(1, 'o'));
+console.log(placePosition(4, 'o'));
+console.log(placePosition(7, 'o')); */
+
+// v3
+console.log(placePosition(2, 'x'));
+console.log(placePosition(5, 'x'));
+console.log(placePosition(8, 'x'));
+
+// c3
+
+
+
+
 // placePosition(6, 'o');
 
-console.log(boardPlacements);
+//console.log(boardPlacements);
 // console.log(playedPositions);
 // console.log(winningCombinations()[0]);
 
