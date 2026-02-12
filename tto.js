@@ -7,6 +7,7 @@ function Gameboard() {
     const rows = 3;
     const columns = 3;
     const board = [];
+    const playedPositions = new Set();
     const boardPlacements = {
         h1: [],
         h2: [],
@@ -86,51 +87,53 @@ function Gameboard() {
 
     //private
     const placePosition = (position, player) => {
-        // Needs to be stored in local storage
-        if (playedPositions.includes(position)) {
+        // Check if symbol is valid.
+        if (!['x', 'o'].includes(player)) {
+            console.error('Value exists in the array');
+            return -1;
+        }
+
+        // Check if the position is valid
+        if (position < 0 || position > 8) {
+            console.error('Invalid position. Position must be between 0 and 8.');
+            return;
+        }
+
+        // Check if the position has already been played
+        if (playedPositions.has(position)) {
             console.log('Position played already. Position:', position);
             return;
         }
 
-        // &&& check for x & os string
 
-        playedPositions.push(position);
+        // Mark the position as played
+        playedPositions.add(position);
 
-        switch (position) {
-            case 0:
-                addToBoard(['h1', 'v1', 'c1'], position, player);
-                break;
-            case 1:
-                addToBoard(['h1', 'v2'], position, player);
-                break;
-            case 2:
-                addToBoard(['h1', 'v3', 'c2'], position, player);
-                break;
-            case 3:
-                addToBoard(['h2', 'v1'], position, player);
-                break;
-            case 4:
-                addToBoard(['h2', 'v2', 'c1', 'ca2'], position, player);
-                break;
-            case 5:
-                addToBoard(['h2', 'v3'], position, player);
-                break;
-            case 6:
-                addToBoard(['h3', 'v1', 'c2'], position, player);
-                break;
-            case 7:
-                addToBoard(['h3', 'v2'], position, player);
-                break;
-            case 8:
-                addToBoard(['h3', 'v3', 'c1'], position, player);
-                break;
-            default:
-                console.log('position not found');
-                break;
-        }
+        // Map positions to their corresponding elements
+        const positionMap = [
+            ['h1', 'v1', 'c1'],  // 0
+            ['h1', 'v2'],          // 1
+            ['h1', 'v3', 'c2'],  // 2
+            ['h2', 'v1'],          // 3
+            ['h2', 'v2', 'c1', 'c2'], // 4
+            ['h2', 'v3'],          // 5
+            ['h3', 'v1', 'c2'],  // 6
+            ['h3', 'v2'],          // 7
+            ['h3', 'v3', 'c1']   // 8
+        ];
+
+        // Get the corresponding position data from positionMap
+        const posData = positionMap[position];
+        if (!posData) return console.error('Invalid position');
+
+        // Add the player's symbol to each element in the position
+        //console.log(posData, position, player);
+
+        return addToBoard(posData, position, player);
     }
 
     const addToBoard = (params, position, player) => {
+        let winner = {};
         params.forEach(element => {
             const count = boardPlacements[element].push({
                 // add players move as a object to the boardPlacements key:val store. Example: {x:4}
@@ -139,28 +142,23 @@ function Gameboard() {
 
             // check winner eligibility each time a winning combination gets 3 placements
             if (count == 3) {
-                console.log('fuckkkkk', element);
-
                 if (result = threePlacements(element, player)) {
-                    console.log(result);
-
-                    return result;
+                    winner = result;
+                    return;
                 }
-                // Continue playing
-                return;
             }
         });
+        // Continue playing
+        return winner;
     }
 
     const threePlacements = (placement, player) => {
-        console.log('dsdsd', boardPlacements[placement]);
-        let test = boardPlacements[placement][0];
-        console.log("toets :", Object.keys(test));
-
         // Returns an array of player positions that were added to the boardplacements object ['0','4','8']
         const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
+
         // Returns an array of player symbols that were added to the boardplacements object ['x','x','x']
         const mappedPlayers = boardPlacements[placement].map((obj) => Object.keys(obj)[0] + '');
+
         // Check if each symbol placed is the same as the current players symbol. Example all items in ['x','x','x'] = player
         const firstCondition = mappedPlayers.every((currentValue) => currentValue == player)
         let secondCondition = false

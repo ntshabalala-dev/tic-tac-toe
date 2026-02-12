@@ -14,26 +14,15 @@ let boardPlacements = {
 //const playedPositions = [];
 
 function winningCombinations() {
-    let h1 = [0, 1, 2];
-    let h2 = [3, 4, 5];
-    let h3 = [6, 7, 8];
-
-    let v1 = [0, 3, 6];
-    let v2 = [1, 4, 7];
-    let v3 = [2, 5, 8];
-
-    let c1 = [0, 4, 8];
-    let c2 = [2, 4, 6];
-
     return [
-        h1,
-        h2,
-        h3,
-        v1,
-        v2,
-        v3,
-        c1,
-        c2
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
     ];
 }
 
@@ -103,7 +92,7 @@ function placePosition(position, player) {
     if (playedPositions.has(position)) {
         console.log('Position played already. Position:', position);
         return;
-    }kimi k2.5
+    }
 
 
     // Mark the position as played
@@ -145,8 +134,8 @@ function addToBoard(params, position, player) {
         // check winner eligibility each time a winning combination gets 3 placements
         if (count == 3) {
             if (result = threePlacements(element, player)) {
-                //console.log(result, 'manje????');
                 winner = result;
+                resetBoard();
                 return;
             }
         }
@@ -156,10 +145,6 @@ function addToBoard(params, position, player) {
 }
 
 function threePlacements(placement, player) {
-    //console.log('dsdsd', boardPlacements[placement]);
-    let test = boardPlacements[placement][0];
-    //console.log("toets :", Object.keys(test));
-
     // Returns an array of player positions that were added to the boardplacements object ['0','4','8']
     const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
     // Returns an array of player symbols that were added to the boardplacements object ['x','x','x']
@@ -167,8 +152,6 @@ function threePlacements(placement, player) {
     // Check if each symbol placed is the same as the current players symbol. Example all items in ['x','x','x'] = player
     const firstCondition = mappedPlayers.every((currentValue) => currentValue == player)
     let secondCondition = false
-
-    //console.log('players', mappedPlayers);
 
     // limit to params
     winningCombinations().forEach((combination) => {
@@ -189,23 +172,36 @@ function threePlacements(placement, player) {
 }
 
 
+function resetBoard() {
+    Object.keys(boardPlacements).forEach(key => {
+        if (Array.isArray(boardPlacements[key])) {
+            boardPlacements[key] = [];
+        }
+    });
+    playedPositions.clear();
+}
+
 
 // Tests
 
 //c1
-/* console.log(placePosition(0, 'x'));
+console.log(placePosition(0, 'x'));
 console.log(placePosition(4, 'x'));
-console.log(placePosition(8, 'x')); */
+console.log(placePosition(8, 'x'));
+
+console.log('nuts');
 
 // c2
-/* console.log(placePosition(4, 'x'));
+console.log(placePosition(4, 'x'));
 console.log(placePosition(6, 'x'));
-console.log(placePosition(2, 'x')); */
+console.log(placePosition(2, 'x'));
+
+console.log('nuts 2');
 
 // h1
-/* console.log(placePosition(0, 'x'));
+console.log(placePosition(0, 'x'));
 console.log(placePosition(1, 'x'));
-console.log(placePosition(2, 'x')); */
+console.log(placePosition(2, 'x'));
 
 // h2
 /* console.log(placePosition(3, 'o'));
@@ -228,11 +224,11 @@ console.log(placePosition(4, 'o'));
 console.log(placePosition(7, 'o')); */
 
 // v3
-console.log(placePosition(2, 'x'));
+/* console.log(placePosition(2, 'x'));
 console.log(placePosition(5, 'x'));
-console.log(placePosition(8, 'x'));
+console.log(placePosition(8, 'x')); */
 
-// c3
+
 
 
 
