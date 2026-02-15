@@ -202,7 +202,7 @@ function Cell() {
 }
 
 
-function GameController(P1Name, P2Name) {
+function GameController(P1Name = "Player One", P2Name = "Player Two") {
     let players = [
         {
             name: P1Name,
@@ -223,13 +223,11 @@ function GameController(P1Name, P2Name) {
     }
 
     let getActivePlayer = () => {
-        activePlayer
+        return activePlayer
     }
 
     let printNewRound = () => {
-        // Create initial board with the default player going first (P1)
-        board.printBoard();
-        console.log(`${getActivePlayer().name}'s turn.`);
+        return `${getActivePlayer().name}'s turn.`;
     }
 
     const playRound = (position) => {
@@ -246,11 +244,62 @@ function GameController(P1Name, P2Name) {
     };
 
     printNewRound();
+
+    return {
+        playRound,
+        printNewRound,
+        getActivePlayer,
+        getBoard: board.getBoard
+    };
 }
 
-const board = Gameboard();
-board.setSymbol('X', 0);
-board.setSymbol('X', 4);
-board.setSymbol('X', 8);
-console.log(board.printBoard());
+function ScreenController() {
+    const boardGame = GameController();
+    const playerTurn = document.querySelector('.turn--active');
+    const board = document.querySelector('.board');
+    const boardCells = document.querySelectorAll('.board__item');
+
+    console.log(board);
+
+
+    let isCleared = false;
+
+    const clearScreen = () => {
+        if (!isCleared) {
+            boardCells.forEach((boardCell, index) => {
+                boardCell.textContent = '';
+                boardCell.dataset.cell = index
+            });
+        }
+        isCleared = true;
+    }
+
+    // const updateScreen = () => {
+    //     const board = game.getBoard();
+    //     const activePlayer = game.getActivePlayer();
+
+    // }
+
+    const playRound = (e) => {
+        const target = e.target;
+        // do nothing if clicked area doesn't have a data cell attribute
+        if (!target.dataset.cell) return;
+
+        const spanEl = document.createElement('span');
+        spanEl.className = 'letter';
+        spanEl.textContent = boardGame.getActivePlayer().symbol;
+        target.append(spanEl);
+    };
+
+    board.addEventListener('click', playRound);
+    clearScreen();
+}
+
+ScreenController();
+
+// const board = Gameboard();
+// board.setSymbol('X', 0);
+// board.setSymbol('X', 4);
+// board.setSymbol('X', 8);
+// console.log(board.printBoard());
 // console.log(board.getBoard());

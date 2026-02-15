@@ -4,6 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css" />
+    <script defer src="./tto.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css?family=Roboto:wght@100;400;700&display=swap" rel="stylesheet" />
@@ -11,18 +12,18 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="item item--1">
+    <div class="board">
+        <div class="board__item board__item--0">
             <span class="letter">A</span>
         </div>
-        <div class="item item--2">2</div>
-        <div class="item item--3">3</div>
-        <div class="item item--4">4</div>
-        <div class="item item--5">5</div>
-        <div class="item item--6">6</div>
-        <div class="item item--7">7</div>
-        <div class="item item--8">8</div>
-        <div class="item item--9">9</div>
+        <div class="board__item board__item--1">1</div>
+        <div class="board__item board__item--2">2</div>
+        <div class="board__item board__item--3">3</div>
+        <div class="board__item board__item--4">4</div>
+        <div class="board__item board__item--5">5</div>
+        <div class="board__item board__item--6">6</div>
+        <div class="board__item board__item--7">7</div>
+        <div class="board__item board__item--8">8</div>
     </div>
 
     <div class="game-players">
@@ -30,19 +31,19 @@
         <div class="game-players__container">
             <!-- Independent player blocks (reusable) -->
             <div class="player player--1">
-                <span class="turn turn--active"></span>
+                <span class="turn turn--active"> > Your Turn </span>
                 <div class="card">
                 </div>
             </div>
             <!-- Simple score container -->
             <div class="score">
-                <span class="score__value score__value--1">21</span>
+                <span class="score__value score__value--1">0</span>
                 <span class="score__vs">VS</span>
-                <span class="score__value score__value--2">19</span>
+                <span class="score__value score__value--2">0</span>
             </div>
 
             <div class="player player--2">
-                <span class="turn"> > dsd</span>
+                <span class="turn"></span>
                 <div class="card">
                 </div>
             </div>
