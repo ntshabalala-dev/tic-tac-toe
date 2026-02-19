@@ -31,8 +31,10 @@
         <div class="game-players__container">
             <!-- Independent player blocks (reusable) -->
             <div class="player player--1">
-                <span class="turn turn--active"> > Your Turn </span>
-                <div class="card">
+                <span class="turn"><span class="arrow">></span>Your Turn</span>
+                <div class="card"><span class="card__letter">
+                    X
+                </span>
                 </div>
             </div>
             <!-- Simple score container -->
@@ -43,8 +45,9 @@
             </div>
 
             <div class="player player--2">
-                <span class="turn"></span>
+                <span class="turn turn--inactive"><span class="arrow">></span>Your Turn</span>
                 <div class="card">
+                    <span class="card__letter">O</span>
                 </div>
             </div>
         </div>

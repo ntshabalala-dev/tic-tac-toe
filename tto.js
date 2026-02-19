@@ -206,11 +206,13 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
     let players = [
         {
             name: P1Name,
-            symbol: 'X'
+            symbol: 'X',
+            turn: 1,
         },
         {
             name: P2Name,
-            symbol: 'O'
+            symbol: 'O',
+            turn: 2,
         },
     ]
 
@@ -232,23 +234,23 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
 
     const playRound = (position) => {
         console.log(
-            `Dropping ${getActivePlayer().name}'s token into column ${column}...`
+            `Placing ${getActivePlayer().name}'s token into position ${position}...`
         );
-        board.setSymbol(getActivePlayer().symbol, position);
+        //board.setSymbol(getActivePlayer().symbol, position);
 
         /*  This is where we would check for a winner and handle that logic,
             such as a win message. */
 
         switchPlayerTurn();
-        printNewRound();
+        //printNewRound();
     };
 
-    printNewRound();
+    //printNewRound();
 
     return {
         playRound,
-        printNewRound,
         getActivePlayer,
+        printNewRound,
         getBoard: board.getBoard
     };
 }
@@ -283,12 +285,22 @@ function ScreenController() {
     const playRound = (e) => {
         const target = e.target;
         // do nothing if clicked area doesn't have a data cell attribute
-        if (!target.dataset.cell) return;
+        if (!target.dataset.cell || target.textContent !== '') return;
 
         const spanEl = document.createElement('span');
+        const player = boardGame.getActivePlayer();
         spanEl.className = 'letter';
-        spanEl.textContent = boardGame.getActivePlayer().symbol;
+        spanEl.textContent = player.symbol;
         target.append(spanEl);
+
+        boardGame.playRound(target.dataset.cell);
+        // console.log(boardGame.printNewRound());
+
+        document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
+        document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
+
+        //console.log(turn.textContent = boardGame.printNewRound());
+
     };
 
     board.addEventListener('click', playRound);

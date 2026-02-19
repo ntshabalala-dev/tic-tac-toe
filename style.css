@@ -13,7 +13,7 @@
 }
 
 body {
-    line-height: 1.6;
+    line-height: 1;
     word-spacing: 1.4px;
     font-family: 'Roboto', sans-serif;
     color: var(--clr-dark);
@@ -62,10 +62,17 @@ body {
 
 
 .card {
-    border: 3px solid red;
+    border: 3px solid var(--clr-accent);
     width: 100px;
     height: 100px;
     border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card__letter {
+    font-size: 6rem;
 }
 
 .game-players__container {
@@ -79,7 +86,7 @@ body {
 
 .score {
     padding-top: 8px;
-    border-bottom: 2px dotted red;
+    border-bottom: 2px solid var(--clr-accent);
 }
 
 .game-players {
@@ -91,12 +98,13 @@ body {
 
 .turn {
     line-height: .8rem;
+    padding-bottom: 4px;
+    text-align: center;
 }
 
 .player {
     display: flex;
     flex-direction: column;
-    /* border: dotted 2px blue; */
 }
 
 .player {
@@ -104,6 +112,14 @@ body {
 }
 
 .score__vs {
+    font-weight: 700;
+}
+
+.turn--inactive {
+    visibility: hidden;
+}
+
+.arrow {
     font-weight: 700;
 }
 
@@ -131,5 +147,14 @@ body {
 
     .score__vs {
         font-size: .8rem;
+    }
+
+    .turn {
+        padding-bottom: 2px;
+        font-size: .75rem;
+    }
+
+    .card__letter {
+        font-size: 4rem;
     }
 }
