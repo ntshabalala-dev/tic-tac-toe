@@ -4,11 +4,12 @@
     --clr-accent: #e11d48;
 }
 
-*,
-*::before,
-*::after {
+*:not(dialog) {
     padding: 0;
     margin: 0;
+}
+
+* {
     box-sizing: border-box;
 }
 

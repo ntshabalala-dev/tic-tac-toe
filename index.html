@@ -4,6 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./dialog.css">
     <script defer src="./tto.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,10 +13,23 @@
 </head>
 
 <body>
-    <div class="board">
-        <div class="board__item board__item--0">
-            <span class="letter">A</span>
+    <dialog id="my-dialog">
+        <div class="dialog-header">
+            <h2>Dialog Title</h2>
+            <button class="close-btn" commandfor="my-dialog" command="close" title="Close">&times;</button>
+            <div class="dialog-header__buttons">
+                <button type="button" commandfor="my-dialog" command="close" id="continue-button" data-close-modal>
+                    Continue
+                </button>
+                <button type="button" commandfor="my-dialog" command="close" id="restart-button" data-close-modal>
+                    Restart
+                </button>
+            </div>
         </div>
+    </dialog>
+
+    <div class="board">
+        <div class="board__item board__item--0">0</div>
         <div class="board__item board__item--1">1</div>
         <div class="board__item board__item--2">2</div>
         <div class="board__item board__item--3">3</div>

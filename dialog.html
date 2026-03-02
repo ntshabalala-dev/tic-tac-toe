@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Dialog</title>
+    <style>
+        dialog {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 90vw;
+        }
+        dialog::backdrop {
+            background: rgba(0,0,0,0.5);
+        }
+        .dialog-header {
+            position: relative;
+            padding: 20px 20px 10px;
+            text-align: center;
+        }
+        .close-btn {
+            position: absolute;
+            top: -10px;
+            left:-12px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-btn:hover {
+            color: #000;
+            background: #f0f0f0;
+            border-radius: 50%;
+        }
+        .dialog-content {
+            padding: 0 20px 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button class="open-btn">Open Dialog</button>
+
+    <dialog id="myDialog">
+        <div class="dialog-header">
+            <h2>Dialog Title</h2>
+            <button class="close-btn" title="Close">&times;</button>
+            <div>
+                  <button type="button" class="continue-button" data-close-modal>
+                Play Again?
+              </button>
+                  <button type="button" class="restart-button" data-close-modal>
+                Restart?
+              </button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        const dialog = document.getElementById('myDialog');
+        const openBtn = document.querySelector('.open-btn');
+        const closeBtn = document.querySelector('.close-btn');
+
+        openBtn.addEventListener('click', () => {
+            dialog.showModal();
+        });
+
+        closeBtn.addEventListener('click', () => {
+            dialog.close();
+        });
+    </script>
+</body>
+</html>

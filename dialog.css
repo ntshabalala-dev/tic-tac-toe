@@ -1,0 +1,83 @@
+dialog {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    width: 300px;
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-header {
+    position: relative;
+    padding: 20px 20px 10px;
+    text-align: center;
+}
+
+.close-btn {
+    position: absolute;
+    top: -1rem;
+    right: -1rem;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    color: #000;
+    background: #f0f0f0;
+    border-radius: 50%;
+}
+
+.dialog-content {
+    padding: 0 20px 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dialog-header>h2 {
+    margin-bottom: 1rem;
+}
+
+.smooth-blink {
+    /* Animation name, duration, timing, iteration count */
+    animation: blinker 1s linear 5;
+}
+
+@keyframes blinker {
+    0% {
+        opacity: 1.0;
+    }
+
+    50% {
+        opacity: 0.0;
+    }
+
+    100% {
+        opacity: 1.0;
+    }
+}
+
+/* 0 to 768px */
+@media (max-width: 768px) {
+    dialog {
+        width: 80vw;
+    }
+}

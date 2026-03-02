@@ -36,10 +36,14 @@ function Gameboard() {
         // For each cell in a row, it calls the getValue() method,
         const availableCells = board.map((row) => row.filter((cell) => cell.getValue() === ''))
 
-        if (!availableCells.length) return;
-        const row = getCoordinates(position)[0];
-        const column = getCoordinates(position)[1];
+        if (!availableCells.length) return -1;
+
+        const coordinates = getCoordinates(position);
+        const row = coordinates[0];
+        const column = coordinates[1];
+
         board[row][column].addSymbol(playerSymbol);
+        return placePosition(position, playerSymbol);
     };
 
     const printBoard = () => {
@@ -49,6 +53,8 @@ function Gameboard() {
 
     // possibly remove if getting values from html
     const getCoordinates = (position) => {
+
+        console.log(typeof position);
         [row, col] = [-1, -1];
         switch (position) {
             case 0:
@@ -85,10 +91,25 @@ function Gameboard() {
         return [row, col];
     }
 
+    const getWinningCombinations = () => {
+        return [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+    }
+
     //private
     const placePosition = (position, player) => {
+        console.log(player, typeof player);
+
         // Check if symbol is valid.
-        if (!['x', 'o'].includes(player)) {
+        if (!['X', 'O'].includes(player)) {
             console.error('Value exists in the array');
             return -1;
         }
@@ -153,7 +174,7 @@ function Gameboard() {
     }
 
     const threePlacements = (placement, player) => {
-        // Returns an array of player positions that were added to the boardplacements object ['0','4','8']
+        // Returns a sorted array of player positions that were added to the boardplacements object ['0','4','8']
         const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
 
         // Returns an array of player symbols that were added to the boardplacements object ['x','x','x']
@@ -164,25 +185,39 @@ function Gameboard() {
         let secondCondition = false
 
         console.log('players', mappedPlayers);
+        let winningCombination = [];
+        // get winning combination
+        getWinningCombinations().some((combination) => {
+            console.log(combination, mappedPositions);
 
-        // limit to params
-        winningCombinations().forEach((combination) => {
-            combination.every((element, index) => {
-                if (element === mappedPositions[index] && !secondCondition) {
-                    secondCondition = true;
-                    return false;
-                }
-            })
+            const isEqual = combination.every((element, index) => {
+                return element === mappedPositions[index];
+            });
+
+            if (isEqual) {
+                secondCondition = true
+                winningCombination = combination;
+                return true;
+            }
         });
 
         if (firstCondition && secondCondition) {
-            return { player: player, winningCombination: placement };
+            // const winningCombination boardPlacements[placement].map((obj) => {
+            //     return Object.values(obj)[0];
+            // });
+            console.log(boardPlacements);
+
+            return { player: player, winningCombination: winningCombination };
         } else {
             return null;
         }
     }
 
-    return { getBoard, setSymbol, printBoard }
+    const getPlayedPositions = () => {
+        return playedPositions;
+    }
+
+    return { getBoard, setSymbol, printBoard, getPlayedPositions }
 }
 
 
@@ -236,12 +271,30 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
         console.log(
             `Placing ${getActivePlayer().name}'s token into position ${position}...`
         );
-        //board.setSymbol(getActivePlayer().symbol, position);
+        const roundResult = board.setSymbol(getActivePlayer().symbol, +position);
+        if (Object.hasOwn(roundResult, "winningCombination")) {
+            console.log(roundResult);
+            // if p2 wins switch back to p1
+            if (roundResult.player == 'O') {
+                //switchPlayerTurn();
+            }
+            return roundResult;
+        } else if (board.getPlayedPositions().size === 9) {
+            const range = [...Array(9).keys()];
+            // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+            console.log({ player: 'Draw', winningCombination: range });
+            return { player: 'Draw', winningCombination: range };
+        }
+
+        console.log(board.getPlayedPositions().size);
+
+
 
         /*  This is where we would check for a winner and handle that logic,
             such as a win message. */
 
         switchPlayerTurn();
+        return null;
         //printNewRound();
     };
 
@@ -257,9 +310,12 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
 
 function ScreenController() {
     const boardGame = GameController();
-    const playerTurn = document.querySelector('.turn--active');
+    const dialogButtons = document.querySelector('.dialog-header__buttons');
     const board = document.querySelector('.board');
     const boardCells = document.querySelectorAll('.board__item');
+    const dialog = document.getElementById('my-dialog');
+    const p1Score = document.querySelector('.score__value--1');
+    const p2Score = document.querySelector('.score__value--2');
 
     console.log(board);
 
@@ -268,12 +324,22 @@ function ScreenController() {
 
     const clearScreen = () => {
         if (!isCleared) {
-            boardCells.forEach((boardCell, index) => {
-                boardCell.textContent = '';
-                boardCell.dataset.cell = index
-            });
+
         }
-        isCleared = true;
+        boardCells.forEach((boardCell, index) => {
+            boardCell.textContent = '';
+            boardCell.dataset.cell = index
+        });
+
+        p1Score.textContent = '0';
+        p2Score.textContent = '0';
+
+        console.log(boardGame.getActivePlayer());
+
+        if (boardGame.getActivePlayer().turn == 2) {
+            document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
+            document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
+        }
     }
 
     // const updateScreen = () => {
@@ -293,16 +359,52 @@ function ScreenController() {
         spanEl.textContent = player.symbol;
         target.append(spanEl);
 
-        boardGame.playRound(target.dataset.cell);
+        const result = boardGame.playRound(target.dataset.cell);
         // console.log(boardGame.printNewRound());
+        if (!result) {
+            document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
+            document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
+        } else {
+            switch (result.player.toLowerCase()) {
+                case 'draw':
+                    console.log('ITS A DRAW!!!');
 
-        document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
-        document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
+                    break;
 
-        //console.log(turn.textContent = boardGame.printNewRound());
+                default:
+                    console.log(`${result.player} wins!!!`);
+                    const wc = result.winningCombination;
 
+                    wc.forEach(position => {
+                        let symbol = document.querySelector(`.board__item--${position}`);
+                        symbol.classList.add('smooth-blink');
+                    });
+
+                    setTimeout(function () {
+                        dialog.showModal();
+                    }, 5000)
+                    break;
+            }
+
+        }
     };
 
+    dialogButtons.addEventListener('click', (e) => {
+        const target = e.target;
+        switch (target.id) {
+            case 'continue-button':
+                clearScreen();
+                break;
+            case 'restart-button':
+                clearScreen();
+                break;
+
+            default:
+                break;
+        }
+
+
+    });
     board.addEventListener('click', playRound);
     clearScreen();
 }
