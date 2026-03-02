@@ -309,7 +309,7 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
 }
 
 function ScreenController() {
-    const boardGame = GameController();
+    let boardGame = null;
     const dialogButtons = document.querySelector('.dialog-header__buttons');
     const board = document.querySelector('.board');
     const boardCells = document.querySelectorAll('.board__item');
@@ -317,28 +317,26 @@ function ScreenController() {
     const p1Score = document.querySelector('.score__value--1');
     const p2Score = document.querySelector('.score__value--2');
 
-    console.log(board);
+    const clearScreen = (dialogOption = '') => {
+        boardGame = GameController();
 
-
-    let isCleared = false;
-
-    const clearScreen = () => {
-        if (!isCleared) {
-
-        }
         boardCells.forEach((boardCell, index) => {
             boardCell.textContent = '';
             boardCell.dataset.cell = index
         });
 
-        p1Score.textContent = '0';
-        p2Score.textContent = '0';
+        if (dialogOption == "restart-button") {
+            p1Score.textContent = '0';
+            p2Score.textContent = '0';
+        }
+
 
         console.log(boardGame.getActivePlayer());
 
-        if (boardGame.getActivePlayer().turn == 2) {
-            document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
-            document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
+        if (dialogOption) {
+            // Reser turn indicator back to Player 1
+            document.querySelector('.player--2 .turn').classList.add('turn--inactive');
+            document.querySelector('.player--1 .turn').classList.remove('turn--inactive');
         }
     }
 
@@ -375,12 +373,10 @@ function ScreenController() {
                     console.log(`${result.player} wins!!!`);
                     const wc = result.winningCombination;
 
-                    wc.forEach(position => {
-                        let symbol = document.querySelector(`.board__item--${position}`);
-                        symbol.classList.add('smooth-blink');
-                    });
-
+                    clearBlinkingClassList('add', wc);
+                    // show dialog after 5 seconds
                     setTimeout(function () {
+                        clearBlinkingClassList('remove', wc);
                         dialog.showModal();
                     }, 5000)
                     break;
@@ -389,14 +385,25 @@ function ScreenController() {
         }
     };
 
+    const clearBlinkingClassList = (method, winningCombination) => {
+        winningCombination.forEach(position => {
+            let symbol = document.querySelector(`.board__item--${position}`);
+            if (method == 'add') {
+                symbol.classList.add('smooth-blink');
+            } else {
+                symbol.classList.remove('smooth-blink');
+            }
+        });
+    }
+
     dialogButtons.addEventListener('click', (e) => {
         const target = e.target;
         switch (target.id) {
             case 'continue-button':
-                clearScreen();
+                clearScreen(target.id);
                 break;
             case 'restart-button':
-                clearScreen();
+                clearScreen(target.id);
                 break;
 
             default:
