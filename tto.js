@@ -1,8 +1,3 @@
-
-
-// with factory patterns
-
-
 function Gameboard() {
     const rows = 3;
     const columns = 3;
@@ -51,10 +46,7 @@ function Gameboard() {
         return boardWithCellValues;
     };
 
-    // possibly remove if getting values from html
     const getCoordinates = (position) => {
-
-        console.log(typeof position);
         [row, col] = [-1, -1];
         switch (position) {
             case 0:
@@ -85,7 +77,7 @@ function Gameboard() {
                 [row, col] = [2, 2];
                 break;
             default:
-                console.log('position not found');
+                console.error('position not found');
                 return [];
         }
         return [row, col];
@@ -104,10 +96,7 @@ function Gameboard() {
         ];
     }
 
-    //private
     const placePosition = (position, player) => {
-        console.log(player, typeof player);
-
         // Check if symbol is valid.
         if (!['X', 'O'].includes(player)) {
             console.error('Value exists in the array');
@@ -122,7 +111,7 @@ function Gameboard() {
 
         // Check if the position has already been played
         if (playedPositions.has(position)) {
-            console.log('Position played already. Position:', position);
+            console.error('Position played already. Position:', position);
             return;
         }
 
@@ -148,8 +137,6 @@ function Gameboard() {
         if (!posData) return console.error('Invalid position');
 
         // Add the player's symbol to each element in the position
-        //console.log(posData, position, player);
-
         return addToBoard(posData, position, player);
     }
 
@@ -174,6 +161,8 @@ function Gameboard() {
     }
 
     const threePlacements = (placement, player) => {
+        let secondCondition = false
+        let winningCombination = [];
         // Returns a sorted array of player positions that were added to the boardplacements object ['0','4','8']
         const mappedPositions = boardPlacements[placement].map((obj) => Object.values(obj)[0]).sort((a, b) => a - b);
 
@@ -182,14 +171,9 @@ function Gameboard() {
 
         // Check if each symbol placed is the same as the current players symbol. Example all items in ['x','x','x'] = player
         const firstCondition = mappedPlayers.every((currentValue) => currentValue == player)
-        let secondCondition = false
 
-        console.log('players', mappedPlayers);
-        let winningCombination = [];
         // get winning combination
         getWinningCombinations().some((combination) => {
-            console.log(combination, mappedPositions);
-
             const isEqual = combination.every((element, index) => {
                 return element === mappedPositions[index];
             });
@@ -202,11 +186,6 @@ function Gameboard() {
         });
 
         if (firstCondition && secondCondition) {
-            // const winningCombination boardPlacements[placement].map((obj) => {
-            //     return Object.values(obj)[0];
-            // });
-            console.log(boardPlacements);
-
             return { player: player, winningCombination: winningCombination };
         } else {
             return null;
@@ -268,37 +247,18 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
     }
 
     const playRound = (position) => {
-        console.log(
-            `Placing ${getActivePlayer().name}'s token into position ${position}...`
-        );
         const roundResult = board.setSymbol(getActivePlayer().symbol, +position);
         if (Object.hasOwn(roundResult, "winningCombination")) {
-            console.log(roundResult);
-            // if p2 wins switch back to p1
-            if (roundResult.player == 'O') {
-                //switchPlayerTurn();
-            }
             return roundResult;
         } else if (board.getPlayedPositions().size === 9) {
             const range = [...Array(9).keys()];
             // Output: [0, 1, 2, 3, 4, 5, 6, 7, 8]
-            console.log({ player: 'Draw', winningCombination: range });
             return { player: 'Draw', winningCombination: range };
         }
-
-        console.log(board.getPlayedPositions().size);
-
-
-
-        /*  This is where we would check for a winner and handle that logic,
-            such as a win message. */
-
         switchPlayerTurn();
         return null;
-        //printNewRound();
     };
 
-    //printNewRound();
 
     return {
         playRound,
@@ -316,6 +276,10 @@ function ScreenController() {
     const dialog = document.getElementById('my-dialog');
     const p1Score = document.querySelector('.score__value--1');
     const p2Score = document.querySelector('.score__value--2');
+    const dialogTitle = document.querySelector('#dialog-header__dialog-title');
+    const closeButton = document.querySelector('.close-btn');
+    let p1ScoreCount = 0;
+    let p2ScoreCount = 0;
 
     const clearScreen = (dialogOption = '') => {
         boardGame = GameController();
@@ -328,29 +292,22 @@ function ScreenController() {
         if (dialogOption == "restart-button") {
             p1Score.textContent = '0';
             p2Score.textContent = '0';
+            p1ScoreCount = 0;
+            p2ScoreCount = 0;
         }
-
-
-        console.log(boardGame.getActivePlayer());
 
         if (dialogOption) {
-            // Reser turn indicator back to Player 1
-            document.querySelector('.player--2 .turn').classList.add('turn--inactive');
-            document.querySelector('.player--1 .turn').classList.remove('turn--inactive');
+            // Reset turns indicator back to Player 1, if P2 won.
+            switchTurns(dialogOption);
         }
     }
-
-    // const updateScreen = () => {
-    //     const board = game.getBoard();
-    //     const activePlayer = game.getActivePlayer();
-
-    // }
 
     const playRound = (e) => {
         const target = e.target;
         // do nothing if clicked area doesn't have a data cell attribute
         if (!target.dataset.cell || target.textContent !== '') return;
 
+        let winningMessage = '';
         const spanEl = document.createElement('span');
         const player = boardGame.getActivePlayer();
         spanEl.className = 'letter';
@@ -358,30 +315,49 @@ function ScreenController() {
         target.append(spanEl);
 
         const result = boardGame.playRound(target.dataset.cell);
-        // console.log(boardGame.printNewRound());
         if (!result) {
-            document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
-            document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
+            switchTurns();
         } else {
             switch (result.player.toLowerCase()) {
                 case 'draw':
-                    console.log('ITS A DRAW!!!');
-
+                    winningMessage = `IT'S A DRAW!`
                     break;
-
+                case 'x':
+                    winningMessage = 'X Wins!';
+                    p1ScoreCount++;
+                    p1Score.textContent = p1ScoreCount;
+                    document.querySelector('.player--1 .card__letter').classList.add('smooth-blink');
+                    break;
+                case 'o':
+                    winningMessage = 'O Wins!'
+                    p2ScoreCount++;
+                    p2Score.textContent = p2ScoreCount;
+                    document.querySelector('.player--2 .card__letter').classList.add('smooth-blink');
+                    break;
                 default:
-                    console.log(`${result.player} wins!!!`);
-                    const wc = result.winningCombination;
-
-                    clearBlinkingClassList('add', wc);
-                    // show dialog after 5 seconds
-                    setTimeout(function () {
-                        clearBlinkingClassList('remove', wc);
-                        dialog.showModal();
-                    }, 5000)
                     break;
             }
+            dialogTitle.textContent = winningMessage;
+            const wc = result.winningCombination;
+            clearBlinkingClassList('add', wc);
+            // show dialog after 5 seconds
+            setTimeout(function () {
+                clearBlinkingClassList('remove', wc);
+                document.querySelector('.player--1 .card__letter').classList.remove('smooth-blink');
+                document.querySelector('.player--2 .card__letter').classList.remove('smooth-blink');
 
+                dialog.showModal();
+            }, 5000)
+        }
+    };
+
+    const switchTurns = (dialogOption = '') => {
+        if (dialogOption) {
+            document.querySelector('.player--2 .turn').classList.add('turn--inactive');
+            document.querySelector('.player--1 .turn').classList.remove('turn--inactive');
+        } else {
+            document.querySelector('.player--2 .turn').classList.toggle('turn--inactive');
+            document.querySelector('.player--1 .turn').classList.toggle('turn--inactive');
         }
     };
 
@@ -398,6 +374,7 @@ function ScreenController() {
 
     dialogButtons.addEventListener('click', (e) => {
         const target = e.target;
+
         switch (target.id) {
             case 'continue-button':
                 clearScreen(target.id);
@@ -405,22 +382,14 @@ function ScreenController() {
             case 'restart-button':
                 clearScreen(target.id);
                 break;
-
             default:
                 break;
         }
-
-
     });
     board.addEventListener('click', playRound);
+    closeButton.addEventListener('click', () => {
+        clearScreen('continue-button');
+    });
     clearScreen();
 }
-
 ScreenController();
-
-// const board = Gameboard();
-// board.setSymbol('X', 0);
-// board.setSymbol('X', 4);
-// board.setSymbol('X', 8);
-// console.log(board.printBoard());
-// console.log(board.getBoard());
