@@ -270,6 +270,7 @@ function GameController(P1Name = "Player One", P2Name = "Player Two") {
 
 function ScreenController() {
     let boardGame = null;
+    let isButtonVisible = false;
     const dialogButtons = document.querySelector('.dialog-header__buttons');
     const board = document.querySelector('.board');
     const boardCells = document.querySelectorAll('.board__item');
@@ -278,6 +279,7 @@ function ScreenController() {
     const p2Score = document.querySelector('.score__value--2');
     const dialogTitle = document.querySelector('#dialog-header__dialog-title');
     const closeButton = document.querySelector('.close-btn');
+    const mainRestartButton = document.querySelector('#restart-btn')
     let p1ScoreCount = 0;
     let p2ScoreCount = 0;
 
@@ -294,6 +296,8 @@ function ScreenController() {
             p2Score.textContent = '0';
             p1ScoreCount = 0;
             p2ScoreCount = 0;
+            mainRestartButton.style.display = "none";
+            isButtonVisible = false;
         }
 
         if (dialogOption) {
@@ -316,8 +320,13 @@ function ScreenController() {
 
         const result = boardGame.playRound(target.dataset.cell);
         if (!result) {
+            if (!isButtonVisible) {
+                mainRestartButton.style.display = "block";
+                isButtonVisible = true;
+            }
             switchTurns();
         } else {
+            mainRestartButton.disabled = true;
             switch (result.player.toLowerCase()) {
                 case 'draw':
                     winningMessage = `IT'S A DRAW!`
@@ -345,7 +354,7 @@ function ScreenController() {
                 clearBlinkingClassList('remove', wc);
                 document.querySelector('.player--1 .card__letter').classList.remove('smooth-blink');
                 document.querySelector('.player--2 .card__letter').classList.remove('smooth-blink');
-
+                mainRestartButton.disabled = false;
                 dialog.showModal();
             }, 5000)
         }
@@ -386,10 +395,17 @@ function ScreenController() {
                 break;
         }
     });
+
     board.addEventListener('click', playRound);
+
     closeButton.addEventListener('click', () => {
         clearScreen('continue-button');
     });
+
+    mainRestartButton.addEventListener('click', () => {
+        clearScreen('restart-button');
+    })
+
     clearScreen();
 }
 ScreenController();
